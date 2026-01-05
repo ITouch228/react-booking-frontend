@@ -1,0 +1,15 @@
+<svg width="1600" height="1000" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Студия (2x)">
+  <defs>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#EEF2FF"/>
+      <stop offset="1" stop-color="#FFF7ED"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="28" fill="url(#a)"/>
+  <rect x="86" y="104" width="628" height="292" rx="22" fill="white" opacity="0.92" stroke="rgba(15,23,42,0.10)"/>
+  <rect x="140" y="150" width="260" height="24" rx="12" fill="rgba(217,119,6,0.18)"/>
+  <rect x="140" y="196" width="520" height="160" rx="26" fill="rgba(15,23,42,0.06)" stroke="rgba(15,23,42,0.08)"/>
+  <circle cx="530" cy="276" r="44" fill="rgba(37,99,235,0.14)"/>
+  <path d="M520 254h20v44h-20v-44Zm-40 30h20v14h-20v-14Zm80 0h20v14h-20v-14Z" fill="rgba(30,64,175,0.92)"/>
+  <path d="M176 230h220v18H176v-18Zm0 34h320v18H176v-18Zm0 34h240v18H176v-18Z" fill="rgba(15,23,42,0.18)"/>
+</svg>

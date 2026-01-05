@@ -1,0 +1,26 @@
+<svg width="1800" height="1240" viewBox="0 0 900 620" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Иллюстрация бронирования (2x)">
+  <defs>
+    <linearGradient id="bg" x1="140" y1="40" x2="760" y2="580" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EEF2FF"/>
+      <stop offset="0.55" stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#ECFDF5"/>
+    </linearGradient>
+    <linearGradient id="card" x1="200" y1="160" x2="680" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F8FAFC"/>
+    </linearGradient>
+  </defs>
+  <rect x="40" y="40" width="820" height="540" rx="28" fill="url(#bg)"/>
+  <rect x="140" y="140" width="620" height="340" rx="24" fill="url(#card)" stroke="rgba(15,23,42,0.10)"/>
+  <rect x="180" y="190" width="260" height="18" rx="9" fill="rgba(15,23,42,0.12)"/>
+  <rect x="180" y="230" width="360" height="14" rx="7" fill="rgba(15,23,42,0.10)"/>
+  <rect x="180" y="270" width="420" height="14" rx="7" fill="rgba(15,23,42,0.10)"/>
+  <rect x="180" y="320" width="180" height="50" rx="14" fill="#2563EB"/>
+  <rect x="372" y="320" width="150" height="50" rx="14" fill="rgba(15,23,42,0.06)" stroke="rgba(15,23,42,0.10)"/>
+  <rect x="180" y="400" width="580" height="2" rx="1" fill="rgba(15,23,42,0.08)"/>
+  <rect x="180" y="430" width="210" height="120" rx="18" fill="rgba(37,99,235,0.08)" stroke="rgba(37,99,235,0.18)"/>
+  <rect x="410" y="430" width="210" height="120" rx="18" fill="rgba(22,163,74,0.08)" stroke="rgba(22,163,74,0.18)"/>
+  <rect x="640" y="430" width="120" height="120" rx="18" fill="rgba(245,158,11,0.08)" stroke="rgba(217,119,6,0.22)"/>
+  <circle cx="732" cy="240" r="44" fill="rgba(37,99,235,0.14)"/>
+  <path d="M728 223h8v8h-8v-8Zm-20 0h8v8h-8v-8Zm10 10h8v8h-8v-8Zm0-20h8v8h-8v-8Zm-8 30h32v24h-32v-24Z" fill="#1D4ED8" opacity="0.9"/>
+</svg>

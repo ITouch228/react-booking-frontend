@@ -1,0 +1,19 @@
+<svg width="1600" height="1000" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Переговорная (2x)">
+  <defs>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#E0E7FF"/>
+      <stop offset="1" stop-color="#F8FAFC"/>
+    </linearGradient>
+    <linearGradient id="b" x1="120" y1="140" x2="680" y2="380" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#16A34A" stop-opacity="0.10"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="28" fill="url(#a)"/>
+  <rect x="70" y="90" width="660" height="320" rx="22" fill="white" opacity="0.92" stroke="rgba(15,23,42,0.10)"/>
+  <rect x="110" y="140" width="580" height="40" rx="16" fill="url(#b)"/>
+  <rect x="150" y="220" width="500" height="120" rx="26" fill="rgba(15,23,42,0.06)" stroke="rgba(15,23,42,0.08)"/>
+  <circle cx="210" cy="370" r="20" fill="rgba(37,99,235,0.18)"/>
+  <circle cx="590" cy="370" r="20" fill="rgba(22,163,74,0.18)"/>
+  <path d="M165 246h470v18H165v-18Zm0 34h470v18H165v-18Zm0 34h300v18H165v-18Z" fill="rgba(15,23,42,0.18)"/>
+</svg>
