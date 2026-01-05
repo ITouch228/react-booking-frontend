@@ -1,6 +1,6 @@
 import { HashRouter } from 'react-router-dom';
-import { AuthProvider } from './hooks/authContext.ts';
-import AppWithRouter from './components/AppWithRouter.tsx';
+import { AuthProvider } from './hooks/AuthProvider';
+import AppWithRouter from './components/AppWithRouter';
 
 export default function App() {
   return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import useBookings from '../src/hooks/useBookings';
-import { AuthContext } from '../src/hooks/AuthContext';
+import { AuthContext } from '../src/hooks/authContext';
 import { useApiClient } from '../src/services/apiClient';
 import type { Booking, AuthContextType } from '../src/types';
 

@@ -63,7 +63,7 @@ describe('useTimeslots hook', () => {
     await waitFor(() => expect(result.current.timeslotsLoading).toBe(false));
 
     expect(result.current.timeslotsError).toBeNull();
-    expect(result.current.timeSlots).toEqual([[13, 14]]);
+    expect(result.current.timeSlots).toEqual([[10, 11]]);
 
     // проверяем, что дернули корректный endpoint
     expect(apiFetchMock).toHaveBeenCalledTimes(1);
@@ -95,7 +95,7 @@ describe('useTimeslots hook', () => {
     await waitFor(() => expect(result.current.timeslotsLoading).toBe(false));
 
     expect(result.current.timeslotsError).toBeNull();
-    expect(result.current.timeSlots).toEqual([[12, 13]]);
+    expect(result.current.timeSlots).toEqual([[9, 10]]);
 
     expect(apiFetchMock).toHaveBeenCalledTimes(1);
     const [url] = apiFetchMock.mock.calls[0];

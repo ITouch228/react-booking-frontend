@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import useAuth from '../src/hooks/useAuth';
-import { AuthContext } from '../src/hooks/AuthContext';
+import { AuthContext } from '../src/hooks/authContext';
 import type { AuthContextType } from '../src/types';
 
 describe('useAuth hook', () => {

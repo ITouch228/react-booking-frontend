@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useApiClient } from '../src/services/apiClient';
-import { AuthContext } from '../src/hooks/AuthContext';
+import { AuthContext } from '../src/hooks/authContext';
 import type { AuthContextType } from '../src/types';
 
 const mockFetch = vi.fn();
