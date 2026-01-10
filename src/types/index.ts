@@ -28,7 +28,7 @@ export interface User {
   role: Role;
 }
 
-export interface Location {
+interface Location {
   id: number;
   name: string;
   address: string;
@@ -53,7 +53,7 @@ export interface Room {
   location_id: number;
 }
 
-export interface TimeslotBase {
+interface TimeslotBase {
   start_datetime: string;
   end_datetime: string;
   base_price: string;
@@ -72,7 +72,7 @@ export interface Timeslot {
   has_active_booking: boolean;
 }
 
-export interface BookingBase {
+interface BookingBase {
   id: number;
   user_id: number;
   room_id: number;
