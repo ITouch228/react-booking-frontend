@@ -5,10 +5,10 @@ describe('Type definitions and constants', () => {
   describe('ROOM_TYPES', () => {
     it('should contain all expected room types', () => {
       const expectedRoomTypes = [
-        'meeting-room',
-        'cowork-desk',
-        'studio',
-        'sport',
+        'MEETING_ROOM',
+        'COWORK_DESK',
+        'STUDIO',
+        'SPORT',
       ];
       expect(ROOM_TYPES).toEqual(expectedRoomTypes);
     });
@@ -20,10 +20,10 @@ describe('Type definitions and constants', () => {
 
   describe('ROOM_TYPE_LABELS', () => {
     it('should return correct labels for each room type', () => {
-      expect(ROOM_TYPE_LABELS('meeting-room')).toBe('Переговорная');
-      expect(ROOM_TYPE_LABELS('cowork-desk')).toBe('Рабочее место');
-      expect(ROOM_TYPE_LABELS('studio')).toBe('Студия');
-      expect(ROOM_TYPE_LABELS('sport')).toBe('Спорт');
+      expect(ROOM_TYPE_LABELS('MEETING_ROOM')).toBe('Переговорная');
+      expect(ROOM_TYPE_LABELS('COWORK_DESK')).toBe('Рабочее место');
+      expect(ROOM_TYPE_LABELS('STUDIO')).toBe('Студия');
+      expect(ROOM_TYPE_LABELS('SPORT')).toBe('Спорт');
     });
 
     it('should return "Комната" for null or undefined room type', () => {

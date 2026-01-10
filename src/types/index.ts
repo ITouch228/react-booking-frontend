@@ -109,10 +109,10 @@ export interface Draft {
 export type Role = 'GUEST' | 'USER' | 'ADMIN' | null;
 export type DayPart = 'morning' | 'day' | 'evening' | 'any';
 export type RoomType =
-  | 'meeting-room'
-  | 'cowork-desk'
-  | 'studio'
-  | 'sport'
+  | 'MEETING_ROOM'
+  | 'COWORK_DESK'
+  | 'STUDIO'
+  | 'SPORT'
   | null;
 
 export interface FormErrors {
@@ -123,20 +123,20 @@ export interface FormErrors {
 }
 
 export const ROOM_TYPES: Exclude<RoomType, null>[] = [
-  'meeting-room',
-  'cowork-desk',
-  'studio',
-  'sport',
+  'MEETING_ROOM',
+  'COWORK_DESK',
+  'STUDIO',
+  'SPORT',
 ];
 
 export const ROOM_TYPE_LABELS = (roomType: RoomType) => {
   if (!roomType) return 'Комната';
   else {
     const transliteral = {
-      'meeting-room': 'Переговорная',
-      'cowork-desk': 'Рабочее место',
-      studio: 'Студия',
-      sport: 'Спорт',
+      MEETING_ROOM: 'Переговорная',
+      COWORK_DESK: 'Рабочее место',
+      STUDIO: 'Студия',
+      SPORT: 'Спорт',
     };
     return transliteral[roomType];
   }

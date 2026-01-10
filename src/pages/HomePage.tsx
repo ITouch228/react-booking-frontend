@@ -1,6 +1,8 @@
 import { memo, useMemo, useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Spinner from '../components/Spinner';
+import ImageGallery from 'react-image-gallery';
+import 'react-image-gallery/styles/css/image-gallery.css';
 import {
   type Room,
   type Draft,
@@ -200,10 +202,10 @@ const HomePage = memo(function HomePage({
             {filteredRooms.map(room => (
               <article key={room.id} className='card resource-card'>
                 <div className='resource-media'>
-                  <img
+                  {/* <img
                     src={room.images[0]?.image1x || FALLBACK_IMG}
                     srcSet={`${room.images[0]?.image1x || FALLBACK_IMG} 1x, ${
-                      room.images[0]?.image2x || FALLBACK_IMG
+                      room.images[0]?.image1x || FALLBACK_IMG
                     } 2x`}
                     alt={`Фото: ${room.name}`}
                     loading='lazy'
@@ -216,6 +218,18 @@ const HomePage = memo(function HomePage({
                       img.src = FALLBACK_IMG;
                       img.style = 'object-fit: contain';
                     }}
+                  /> */}
+                  <ImageGallery
+                    showFullscreenButton={false}
+                    showPlayButton={false}
+                    showThumbnails={false}
+                    showBullets={true}
+                    lazyLoad={true}
+                    onErrorImageURL={FALLBACK_IMG}
+                    items={room.images.map(image => ({
+                      original: image.image1x || FALLBACK_IMG,
+                      thumbnail: image.image1x || FALLBACK_IMG,
+                    }))}
                   />
                 </div>
                 <div className='resource-body'>

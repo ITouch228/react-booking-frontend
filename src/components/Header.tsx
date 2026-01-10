@@ -31,7 +31,12 @@ const Header = memo(function Header() {
 
           <nav className='nav' aria-label='Навигация'>
             {nav.map(item => (
-              <NavLink key={item.to} to={item.to} end={item.to === '/'}>
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                title={item.label}
+              >
                 <i className={cx('fa-solid', item.icon)} aria-hidden='true'></i>{' '}
                 <span>{item.label}</span>
               </NavLink>

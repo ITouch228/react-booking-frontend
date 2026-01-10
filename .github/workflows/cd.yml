@@ -43,6 +43,7 @@ jobs:
         env:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+
           DEPLOY_BASE: /var/www/booking-pet-project
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |

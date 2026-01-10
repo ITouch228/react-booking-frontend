@@ -91,6 +91,28 @@ const ProfilePage = memo(function ProfilePage({
         </div>
       </div>
 
+      {/* <input type='file' id='fileInput' />
+      <button
+        onClick={async () => {
+          const file = document.getElementById('fileInput').files[0];
+
+          await fetch(
+            'https://s3.xn--80aqenr9bu.xn--p1ai/uploads/images/rooms/1/4c4b399c5b1f42b599a5b3b74ff9b157.png?AWSAccessKeyId=minioadmin&Signature=pDdZ6yqbWOmYl6tAXvkuEb402FU%3D&content-type=image%2Fpng&Expires=1768058673',
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': file.type, // image/png
+              },
+              body: file,
+            },
+          );
+
+          alert('Uploaded!');
+        }}
+      >
+        Upload
+      </button> */}
+
       <section className='card pad' aria-label='Данные пользователя'>
         <div className='card-header'>
           <div>
