@@ -9,8 +9,6 @@ export function useApiClient() {
   // Получение нового accessToken из refresh
   const refreshAccessToken = useCallback(
     async (signal?: AbortSignal | null) => {
-      console.log(document.cookie);
-
       const res = await fetch(`${API_URL}/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -19,6 +17,10 @@ export function useApiClient() {
       });
 
       if (!res.ok) {
+        await fetch(API_URL + '/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+        });
         throw new Error('Refresh не удался');
       }
 

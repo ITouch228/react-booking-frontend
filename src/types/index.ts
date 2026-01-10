@@ -12,6 +12,16 @@ export interface LoginPayload {
   user: User;
 }
 
+interface Image {
+  image1x: string;
+  image2x: string | null;
+  type: 'ROOM' | 'LOCATION';
+  file_id: number;
+  room_id: number | null;
+  location_id: number | null;
+  id: number;
+}
+
 export interface User {
   username: string;
   email: string;
@@ -33,8 +43,7 @@ export interface Room {
   capacity: number;
   description: string;
   hour_price: string;
-  image1x: string;
-  image2x: string;
+  images: Image[];
   features: Feature[];
   time_slot_type: 'FLEXIBLE' | 'FIXED';
   location: Location;
@@ -42,6 +51,15 @@ export interface Room {
   booking_step_minutes: number;
   image_id: number;
   location_id: number;
+}
+
+export interface TimeslotBase {
+  start_datetime: string;
+  end_datetime: string;
+  base_price: string;
+  status: 'AVAILABLE' | 'BLOCKED';
+  id: number;
+  room_id: number;
 }
 
 export interface Timeslot {
@@ -54,23 +72,19 @@ export interface Timeslot {
   has_active_booking: boolean;
 }
 
+export interface BookingBase {
+  id: number;
+  user_id: number;
+  room_id: number;
+  timeslot_id: number;
+  status: 'PENDING_PAYMENTS' | 'PAID' | 'CANCELED' | 'EXPIRED';
+  total_price: string;
+  room: Room;
+}
+
 export interface Booking {
-  booking: {
-    id: number;
-    user_id: number;
-    room_id: number;
-    timeslot_id: number;
-    status: 'PENDING_PAYMENTS' | 'PAID' | 'CANCELED' | 'EXPIRED';
-    total_price: string;
-  };
-  timeslot: {
-    id: number;
-    room_id: number;
-    start_datetime: string;
-    end_datetime: string;
-    base_price: number;
-    status: 'AVAILABLE' | 'BLOCKED';
-  };
+  booking: BookingBase;
+  timeslot: TimeslotBase;
 }
 
 export interface Feature {

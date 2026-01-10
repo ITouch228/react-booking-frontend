@@ -252,10 +252,7 @@ const ProfilePage = memo(function ProfilePage({
                         </span>
                       ) : (
                         <span className='badge'>
-                          <i
-                            className='fa-solid fa-check'
-                            aria-hidden='true'
-                          ></i>{' '}
+                          <i className='fa fa-clock' aria-hidden='true'></i>{' '}
                           {b.booking.status}
                         </span>
                       )}

@@ -3,6 +3,8 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { cx } from '../utils/utils';
 import useAuth from '../hooks/useAuth';
 
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 const nav = [
   { to: '/', label: 'Главная', icon: 'fa-house' },
   { to: '/booking', label: 'Бронирование', icon: 'fa-calendar-check' },
@@ -51,9 +53,13 @@ const Header = memo(function Header() {
                 style={{ cursor: 'pointer' }}
               >
                 <div
-                  onClick={() => {
-                    navigate('/');
+                  onClick={async () => {
+                    await fetch(API_URL + '/auth/logout', {
+                      method: 'POST',
+                      credentials: 'include',
+                    });
                     logout();
+                    navigate('/');
                   }}
                 >
                   <i className={'fa-solid fa-door-open'} aria-hidden='true'></i>{' '}

@@ -2,8 +2,8 @@ import { memo, useCallback, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApiClient } from '../services/apiClient';
 import { cx } from '../utils/utils';
-import type { Booking, Draft, Room, Timeslot } from '../types';
 import { toast } from 'react-toastify';
+import type { Booking, Draft, Room } from '../types';
 
 type ConfirmationPageProps = {
   room: Room;
@@ -39,32 +39,15 @@ const ConfirmationPage = memo(function ConfirmationPage({
       try {
         setIsLoading(true);
         setError(null);
-        const timeslot = await apiFetch<Timeslot>(
-          `/rooms/${draft.roomId}/timeslots`,
-          {
-            method: 'POST',
-            body: JSON.stringify({
-              start_datetime: draft.timeFrom,
-              end_datetime: draft.timeTo,
-              base_price: draft.basePrice,
-              status: 'AVAILABLE',
-            }),
-          },
-        );
-        const booking = await apiFetch<Booking['booking']>('/bookings', {
+        const booking = await apiFetch<Booking>('/bookings/flexible', {
           method: 'POST',
           body: JSON.stringify({
-            timeslot_id: timeslot.id,
+            room_id: draft.roomId,
+            start_datetime: draft.timeFrom,
+            end_datetime: draft.timeTo,
           }),
         });
-        console.log(`New booking: ${JSON.stringify(booking)}`);
-        setBookings([
-          {
-            booking: { ...booking, room_id: draft.roomId },
-            timeslot: { ...timeslot, base_price: Number(timeslot.base_price) },
-          },
-          ...bookings,
-        ]);
+        setBookings([booking, ...bookings]);
 
         navigate('/profile');
       } catch (err) {
@@ -85,7 +68,6 @@ const ConfirmationPage = memo(function ConfirmationPage({
     [
       apiFetch,
       bookings,
-      draft.basePrice,
       draft.roomId,
       draft.timeFrom,
       draft.timeTo,

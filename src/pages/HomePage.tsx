@@ -201,9 +201,9 @@ const HomePage = memo(function HomePage({
               <article key={room.id} className='card resource-card'>
                 <div className='resource-media'>
                   <img
-                    src={room.image1x || FALLBACK_IMG}
-                    srcSet={`${room.image1x || FALLBACK_IMG} 1x, ${
-                      room.image2x || FALLBACK_IMG
+                    src={room.images[0]?.image1x || FALLBACK_IMG}
+                    srcSet={`${room.images[0]?.image1x || FALLBACK_IMG} 1x, ${
+                      room.images[0]?.image2x || FALLBACK_IMG
                     } 2x`}
                     alt={`Фото: ${room.name}`}
                     loading='lazy'
@@ -211,6 +211,7 @@ const HomePage = memo(function HomePage({
                     height='400'
                     onError={e => {
                       const img = e.currentTarget;
+                      console.log('Load Image Error');
                       img.onerror = null;
                       img.src = FALLBACK_IMG;
                       img.style = 'object-fit: contain';
