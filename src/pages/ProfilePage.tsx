@@ -1,65 +1,20 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
+import { memo, useMemo } from 'react';
 import Spinner from '../components/Spinner';
-import { type Booking, type Room, type User } from '../types/index';
+import { type Booking, type User } from '../types/index';
 
 type ProfilePageProps = {
   user: User | null;
-  rooms: Room[];
   bookings: Booking[];
   bookingsLoading: boolean;
   bookingsError: string | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
 
 const ProfilePage = memo(function ProfilePage({
   user,
-  rooms,
   bookings,
   bookingsLoading,
   bookingsError,
-  setUser,
 }: ProfilePageProps) {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [draft, setDraft] = useState<Partial<User> | null>(user);
-  const firstInputRef = useRef<HTMLInputElement | null>(null);
-
-  // синхронизация драфта с юзером
-  useEffect(() => {
-    setDraft(user);
-  }, [user]);
-
-  // установка фокуса на поле в режиме редактирования
-  useEffect(() => {
-    if (isEditing) firstInputRef.current?.focus?.();
-  }, [isEditing]);
-
-  // пока чисто UI
-  const handleEdit = useCallback(() => {
-    if (draft && draft.email && draft.username && draft.role && user) {
-      const updatedUser: User = {
-        ...user,
-        username: draft.username,
-        email: draft.email,
-      };
-      setUser(updatedUser);
-      setIsEditing(false);
-      toast.success('Профиль успешно обновлен');
-    } else {
-      toast.warning('Все обязательные поля должны быть заполнены');
-    }
-  }, [draft, user, setUser]);
-
-  // брони уже с roomName для отображения
-  const bookingView = useMemo(() => {
-    const byId = Object.fromEntries(rooms.map((r: Room) => [r.id, r]));
-
-    return bookings.map(b => ({
-      ...b,
-      roomName: byId[b.booking.room_id]?.name || 'Комната',
-    }));
-  }, [rooms, bookings]);
-
   // информация о бронях (количество и сумма)
   const bookingsSummary = useMemo(() => {
     const total = bookings.reduce(
@@ -114,7 +69,7 @@ const ProfilePage = memo(function ProfilePage({
       </button> */}
 
       <section className='card pad' aria-label='Данные пользователя'>
-        <div className='card-header'>
+        {/* <div className='card-header'>
           <div>
             <h2 className='card-title'>Личные данные</h2>
             <p className='card-meta'>
@@ -154,36 +109,32 @@ const ProfilePage = memo(function ProfilePage({
               </>
             )}
           </div>
-        </div>
+        </div> */}
 
         <form className='form' onSubmit={e => e.preventDefault()}>
           <div className='form-row'>
             <div className='field'>
               <label htmlFor='p-name'>Имя</label>
               <input
-                ref={firstInputRef}
                 id='p-name'
                 className='control'
-                value={draft?.username}
-                onChange={e =>
-                  setDraft(d => ({
-                    ...d,
-                    email: d?.email,
-                    username: e.target.value,
-                  }))
-                }
-                disabled={!isEditing}
+                value={user?.username ?? ''}
+                readOnly
+                tabIndex={-1}
               />
+              <div className='hint'>Имя пользователя в системе</div>
             </div>
+
             <div className='field'>
               <label htmlFor='p-email'>Email</label>
               <input
                 id='p-email'
                 className='control'
-                value={draft?.email}
-                onChange={e => setDraft(d => ({ ...d, email: e.target.value }))}
-                disabled={!isEditing}
+                value={user?.email ?? ''}
+                readOnly
+                tabIndex={-1}
               />
+              <div className='hint'>Email, привязанный к аккаунту</div>
             </div>
           </div>
         </form>
@@ -197,7 +148,7 @@ const ProfilePage = memo(function ProfilePage({
           </div>
           <span className='badge'>
             <i className='fa-solid fa-clock-rotate-left' aria-hidden='true'></i>{' '}
-            {bookingView.length}
+            {bookings.length}
           </span>
         </div>
 
@@ -226,9 +177,9 @@ const ProfilePage = memo(function ProfilePage({
                 </tr>
               </thead>
               <tbody>
-                {bookingView.map(b => (
+                {bookings.map(b => (
                   <tr key={b.booking.id}>
-                    <td>{b.roomName}</td>
+                    <td>{b.booking.room.name}</td>
                     <td>
                       {new Date(b.timeslot.start_datetime).toLocaleDateString(
                         'ru-RU',

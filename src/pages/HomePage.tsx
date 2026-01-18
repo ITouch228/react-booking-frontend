@@ -1,4 +1,4 @@
-import { memo, useMemo, useCallback, useState } from 'react';
+import { memo, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Spinner from '../components/Spinner';
 import ImageGallery from 'react-image-gallery';
@@ -8,6 +8,7 @@ import {
   type Draft,
   type RoomType,
   type Feature,
+  type RoomFilters,
   ROOM_TYPE_LABELS,
   ROOM_TYPES,
   FALLBACK_IMG,
@@ -17,7 +18,15 @@ type HomePageProps = {
   rooms: Room[];
   roomsLoading: boolean;
   roomsError: string | null;
+  hasMore: boolean;
   draft: Draft;
+  filters: RoomFilters;
+  nextPage: () => void;
+  resetFilters: () => void;
+  setFilter: <K extends keyof RoomFilters>(
+    key: K,
+    value: RoomFilters[K],
+  ) => void;
   setDraft: React.Dispatch<React.SetStateAction<Draft>>;
 };
 
@@ -26,30 +35,69 @@ const HomePage = memo(function HomePage({
   roomsLoading,
   roomsError,
   draft,
+  filters,
+  hasMore,
+  resetFilters,
+  nextPage,
+  setFilter,
   setDraft,
 }: HomePageProps) {
   const navigate = useNavigate();
 
-  const [capacity, setCapacity] = useState('any');
-  const [type, setType] = useState<RoomType | 'any'>('any');
   const types = useMemo(() => ROOM_TYPES, []);
 
-  // фильтрация комнат
-  const filteredRooms = useMemo(() => {
-    return rooms.filter(r => {
-      const okType = type === 'any' ? true : r.type === type;
-      const okCapacity =
-        capacity === 'any' ? true : r.capacity >= Number(capacity);
-      return okType && okCapacity;
-    });
-  }, [rooms, type, capacity]);
+  // Ref для бесконечного скролла
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  // Защита от множественных загрузок
+  const loadMoreLock = useRef(false);
+
+  // пагинация комнат с установкой lock
+  useEffect(() => {
+    const node = loadMoreRef.current;
+    if (!node) return;
+
+    // Не грузим, если уже грузим или больше нет страниц
+    if (!hasMore) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        const e = entries[0];
+        if (!e?.isIntersecting) return;
+        if (loadMoreLock.current) return;
+        if (roomsLoading) return;
+        if (!hasMore) return;
+
+        loadMoreLock.current = true;
+        nextPage();
+      },
+      { root: null, rootMargin: '700px 0px', threshold: 0 },
+    );
+
+    // если запрос упал — наблюдатель отключаем
+    if (roomsError) {
+      observer.disconnect();
+      return;
+    }
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [nextPage, roomsLoading, roomsError, hasMore]);
+
+  // Сбрасываем lock когда загрузка закончилась
+  useEffect(() => {
+    if (!roomsLoading) loadMoreLock.current = false;
+  }, [roomsLoading]);
 
   // фильтры
   const handleTypeChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setType(e.target.value as RoomType | 'any');
+      setFilter(
+        'type',
+        e.target.value === 'any' ? undefined : (e.target.value as RoomType),
+      );
     },
-    [setType],
+    [setFilter],
   );
   const handleDateChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,10 +107,17 @@ const HomePage = memo(function HomePage({
   );
   const handleCapacityChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setCapacity(e.target.value);
+      setFilter(
+        'capacity',
+        e.target.value === 'any' ? undefined : Number(e.target.value),
+      );
     },
-    [],
+    [setFilter],
   );
+
+  const uiType = (filters.type ?? 'any') as RoomType | 'any';
+  const uiCapacity =
+    filters.capacity == null ? 'any' : String(filters.capacity);
 
   return (
     <div className='stack-lg'>
@@ -117,7 +172,6 @@ const HomePage = memo(function HomePage({
           className='form'
           onSubmit={e => {
             e.preventDefault();
-            navigate('/booking');
           }}
         >
           <div className='form-row'>
@@ -136,7 +190,7 @@ const HomePage = memo(function HomePage({
               <select
                 id='home-type'
                 className='control'
-                value={type as Exclude<RoomType, null>}
+                value={uiType as Exclude<RoomType, null>}
                 onChange={handleTypeChange}
               >
                 <option value='any'>Любой</option>
@@ -152,7 +206,7 @@ const HomePage = memo(function HomePage({
               <select
                 id='home-capacity'
                 className='control'
-                value={capacity}
+                value={uiCapacity}
                 onChange={handleCapacityChange}
               >
                 <option value='any'>Не важно</option>
@@ -164,8 +218,8 @@ const HomePage = memo(function HomePage({
             </div>
           </div>
 
-          <button className='btn btn-primary btn-block' type='submit'>
-            Показать все варианты
+          <button className='btn btn-primary btn-block' onClick={resetFilters}>
+            Сбросить фильтры
           </button>
         </form>
       </section>
@@ -190,35 +244,18 @@ const HomePage = memo(function HomePage({
             <h3 className='card-title'>Не удалось загрузить объекты</h3>
             <p className='card-meta'>{roomsError}</p>
           </div>
-        ) : filteredRooms.length === 0 ? (
+        ) : rooms.length === 0 ? (
           <div className='card pad' aria-label='Ничего не найдено'>
             <h3 className='card-title'>Ничего не найдено</h3>
             <p className='card-meta'>Попробуйте изменить фильтры.</p>
           </div>
         ) : null}
 
-        {filteredRooms.length > 0 ? (
+        {rooms.length > 0 ? (
           <div className='resource-grid'>
-            {filteredRooms.map(room => (
+            {rooms.map(room => (
               <article key={room.id} className='card resource-card'>
                 <div className='resource-media'>
-                  {/* <img
-                    src={room.images[0]?.image1x || FALLBACK_IMG}
-                    srcSet={`${room.images[0]?.image1x || FALLBACK_IMG} 1x, ${
-                      room.images[0]?.image1x || FALLBACK_IMG
-                    } 2x`}
-                    alt={`Фото: ${room.name}`}
-                    loading='lazy'
-                    width='640'
-                    height='400'
-                    onError={e => {
-                      const img = e.currentTarget;
-                      console.log('Load Image Error');
-                      img.onerror = null;
-                      img.src = FALLBACK_IMG;
-                      img.style = 'object-fit: contain';
-                    }}
-                  /> */}
                   <ImageGallery
                     showFullscreenButton={false}
                     showPlayButton={false}
@@ -273,9 +310,7 @@ const HomePage = memo(function HomePage({
                             ...d,
                             roomId: room.id,
                           }));
-                          navigate(
-                            `/booking?room=${encodeURIComponent(room.id)}`,
-                          );
+                          navigate('/booking');
                         }}
                       >
                         <i
@@ -292,6 +327,66 @@ const HomePage = memo(function HomePage({
                 </div>
               </article>
             ))}
+          </div>
+        ) : null}
+
+        {/* Бесконечный скролл + UI */}
+        <div ref={loadMoreRef} aria-hidden='true' style={{ height: 1 }} />
+
+        {rooms.length > 0 ? (
+          <div className='card pad' style={{ marginTop: 16 }}>
+            {roomsError ? (
+              <div className='alert err' role='alert'>
+                <i
+                  className='fa-solid fa-triangle-exclamation'
+                  aria-hidden='true'
+                ></i>
+                <div>
+                  <h3>Не удалось подгрузить ещё</h3>
+                  <p>{roomsError}</p>
+                  <button
+                    type='button'
+                    className='btn btn-ghost'
+                    onClick={nextPage}
+                    disabled={roomsLoading}
+                  >
+                    Повторить
+                  </button>
+                </div>
+              </div>
+            ) : roomsLoading ? (
+              <div
+                className='alert info'
+                aria-label='Загрузка следующей страницы'
+              >
+                <i className='fa-solid fa-spinner' aria-hidden='true'></i>
+                <div>
+                  <h3>Загружаем ещё…</h3>
+                  <p className='card-meta'>
+                    Подгружаем дополнительные объекты.
+                  </p>
+                </div>
+              </div>
+            ) : hasMore ? (
+              <div className='resource-row' style={{ alignItems: 'center' }}>
+                <div className='hint'>Прокрутите ниже — загрузим ещё.</div>
+                <button
+                  type='button'
+                  className='btn btn-ghost'
+                  onClick={nextPage}
+                >
+                  Загрузить ещё
+                </button>
+              </div>
+            ) : (
+              <div className='alert ok' aria-label='Конец списка'>
+                <i className='fa-solid fa-circle-check' aria-hidden='true'></i>
+                <div>
+                  <h3>Это все объекты</h3>
+                  <p className='card-meta'>Больше ничего нет.</p>
+                </div>
+              </div>
+            )}
           </div>
         ) : null}
       </section>

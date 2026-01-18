@@ -1,10 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import useLocalStorageState from '../hooks/useLocalStorageState';
 import useAuth from '../hooks/useAuth';
 import useRooms from '../hooks/useRooms';
 import useTimeSlots from '../hooks/useTimeslots';
 import useBookings from '../hooks/useBookings';
+import useRoomFilters from '../hooks/useRoomFilters';
 import AppShell from './AppShell';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
@@ -15,31 +16,31 @@ import ConfirmationPage from '../pages/ConfirmPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from '../routes/ProtectedRoute';
 import PublicOnlyRoute from '../routes/PublicOnlyRoute';
-import type { Draft, Room } from '../types';
+import type { Draft } from '../types';
 
 const AppWithRouter: React.FC = () => {
   const location = useLocation();
 
-  const { user, setUser } = useAuth();
-  const { rooms, roomsLoading, roomsError } = useRooms();
+  const { user } = useAuth();
+  const { filters, setFilter, resetFilters, nextPage } = useRoomFilters();
+  const { rooms, roomsLoading, roomsError, hasMore } = useRooms(filters);
   const [draft, setDraft] = useLocalStorageState<Draft>('draft', {
     roomId: rooms[0]?.id || 1,
-    roomName: '',
     date: new Date().toISOString().slice(0, 10),
     timeFrom: null,
     timeTo: null,
-    time: null,
-    hours: null,
+    time: '0:00-1:00',
+    hours: 1,
     basePrice: '0',
   });
   const { timeSlots, timeslotsLoading, timeslotsError } = useTimeSlots(
-    draft.roomId || rooms[0].id,
-    draft.date || new Date().toISOString(),
+    draft.roomId,
+    draft.date,
   );
   const { bookings, setBookings, bookingsLoading, bookingsError } =
     useBookings();
 
-  // изменение подписи сайта
+  // изменение подписи сверху страницы
   useEffect(() => {
     const titles: Record<string, string> = {
       '/': 'Home · Pet-Project',
@@ -53,20 +54,6 @@ const AppWithRouter: React.FC = () => {
     document.title = titles[location.pathname] || 'Pet-Project';
   }, [location.pathname]);
 
-  // Мемоизация Map для комнат
-  const roomIndex = useMemo(() => {
-    return rooms.reduce((acc, room) => {
-      acc[room.id] = room;
-      return acc;
-    }, {} as Record<number, Room>);
-  }, [rooms]);
-
-  // Текущая комната (возможно нужно заменить в draft.room)
-  const currentRoom = useMemo(
-    () => roomIndex[draft.roomId] || roomIndex[1],
-    [draft.roomId, roomIndex],
-  );
-
   return (
     <AppShell>
       <Routes>
@@ -74,11 +61,16 @@ const AppWithRouter: React.FC = () => {
           path='/'
           element={
             <HomePage
-              draft={draft}
-              setDraft={setDraft}
               rooms={rooms}
               roomsLoading={roomsLoading}
               roomsError={roomsError}
+              filters={filters}
+              hasMore={hasMore}
+              draft={draft}
+              nextPage={nextPage}
+              resetFilters={resetFilters}
+              setFilter={setFilter}
+              setDraft={setDraft}
             />
           }
         />
@@ -92,8 +84,6 @@ const AppWithRouter: React.FC = () => {
             element={
               <ProfilePage
                 user={user}
-                setUser={setUser}
-                rooms={rooms}
                 bookings={bookings}
                 bookingsLoading={bookingsLoading}
                 bookingsError={bookingsError}
@@ -108,8 +98,6 @@ const AppWithRouter: React.FC = () => {
               rooms={rooms}
               roomsLoading={roomsLoading}
               roomsError={roomsError}
-              roomIndex={roomIndex}
-              currentRoom={currentRoom}
               timeslots={timeSlots}
               timeslotsLoading={timeslotsLoading}
               timeslotsError={timeslotsError}
@@ -122,7 +110,6 @@ const AppWithRouter: React.FC = () => {
           path='/confirmation'
           element={
             <ConfirmationPage
-              room={currentRoom}
               draft={draft}
               bookings={bookings}
               setBookings={setBookings}

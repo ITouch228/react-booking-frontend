@@ -1,12 +1,28 @@
+import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import TimeSlotSlider from '../src/components/TimeSlotSlider';
 
+vi.mock('../src/utils/utils', async () => {
+  const actual =
+    await vi.importActual<typeof import('../src/utils/utils')>(
+      '../src/utils/utils',
+    );
+
+  return {
+    ...actual,
+    parseTimeRangeToHours: vi.fn().mockImplementation((range: string) => {
+      const [from, to] = range.split('-');
+      const [fromHours, fromMinutes] = from.split(':').map(Number);
+      const [toHours, toMinutes] = to.split(':').map(Number);
+      return [fromHours + fromMinutes / 60, toHours + toMinutes / 60];
+    }),
+  };
+});
+
 vi.mock('react-range', async () => {
-  const actual = await vi.importActual<typeof import('react-range')>(
-    'react-range',
-  );
+  const actual =
+    await vi.importActual<typeof import('react-range')>('react-range');
 
   type RangeProps = {
     values: number[];

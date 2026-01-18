@@ -1,6 +1,7 @@
 import { memo, useEffect, useCallback, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useApiClient } from '../services/apiClient';
+import { useRoom } from '../hooks/useRoom';
 import TimeSlotSlider from '../components/TimeSlotSlider';
 import Spinner from '../components/Spinner';
 import type { Draft, Room } from '../types';
@@ -9,8 +10,6 @@ type BookingPageProps = {
   rooms: Room[];
   roomsLoading: boolean;
   roomsError: string | null;
-  roomIndex: Record<number, Room>;
-  currentRoom: Room;
   timeslots: [number, number][];
   timeslotsLoading: boolean;
   timeslotsError: string | null;
@@ -24,8 +23,6 @@ const BookingPage = memo(function BookingPage({
   rooms,
   roomsLoading,
   roomsError,
-  roomIndex,
-  currentRoom,
   timeslots,
   timeslotsLoading,
   timeslotsError,
@@ -34,8 +31,8 @@ const BookingPage = memo(function BookingPage({
 }: BookingPageProps) {
   const navigate = useNavigate();
   const { apiFetch } = useApiClient();
-  const [searchParams] = useSearchParams();
-  const roomFromQuery = searchParams.get('room');
+
+  const { room } = useRoom(draft.roomId);
 
   const [isSliderDragging, setIsSliderDragging] = useState(false);
   const [dateInput, setDateInput] = useState(draft.date);
@@ -44,24 +41,6 @@ const BookingPage = memo(function BookingPage({
   const [bookingPriceError, setBookingPriceError] = useState<string | null>(
     null,
   );
-
-  // получение roomId из query
-  useEffect(() => {
-    if (!roomFromQuery) return;
-    const roomFromQueryId = Number(roomFromQuery);
-    if (!Number.isFinite(roomFromQueryId)) return;
-
-    const exists = roomIndex[roomFromQueryId];
-    if (!exists) return;
-    if (roomFromQueryId === draft.roomId) return;
-    setDraft((d: Draft) => {
-      if (d.roomId === exists.id) return d;
-      return {
-        ...d,
-        roomId: exists.id,
-      };
-    });
-  }, [roomFromQuery, roomIndex, draft.roomId, setDraft]);
 
   // debounce на дату
   useEffect(() => {
@@ -79,8 +58,7 @@ const BookingPage = memo(function BookingPage({
 
   // обновление цены при изменении отрезка времени
   useEffect(() => {
-    if (!currentRoom?.id) return;
-    if (!draft.timeFrom || !draft.timeTo) return;
+    if (!draft.roomId || !draft.timeFrom || !draft.timeTo) return;
 
     let cancelled = false;
 
@@ -92,7 +70,7 @@ const BookingPage = memo(function BookingPage({
         setBookingPriceError(null);
 
         const data = await apiFetch<{ price: string }>(
-          `/rooms/${currentRoom.id}/price-quote`,
+          `/rooms/${draft.roomId}/price-quote`,
           {
             method: 'POST',
             body: JSON.stringify({
@@ -130,9 +108,9 @@ const BookingPage = memo(function BookingPage({
       cancelled = true;
       controller.abort();
     };
-  }, [currentRoom?.id, draft.timeFrom, draft.timeTo, setDraft, apiFetch]);
+  }, [draft.roomId, draft.timeFrom, draft.timeTo, setDraft, apiFetch]);
 
-  // вычисление timeFrom и timeTo из time
+  // вычисление timeFrom и timeTo из time в draft
   useEffect(() => {
     if (!draft.time) return;
     if (!draft.date || !/^\d{4}-\d{2}-\d{2}$/.test(draft.date)) return;
@@ -160,9 +138,17 @@ const BookingPage = memo(function BookingPage({
 
   // установка времени в draft
   const handleTimeRangeChange = useCallback(
-    (d: React.SetStateAction<Draft>) => {
-      setPricePending(true);
-      setDraft(d);
+    (update: React.SetStateAction<Draft>) => {
+      setDraft(prev => {
+        const next = typeof update === 'function' ? update(prev) : update;
+
+        if (next.time === prev.time && next.hours === prev.hours) {
+          return prev;
+        }
+
+        setPricePending(true);
+        return next;
+      });
     },
     [setDraft],
   );
@@ -204,7 +190,6 @@ const BookingPage = memo(function BookingPage({
                     setDraft((d: Draft) => ({
                       ...d,
                       roomId: Number(e.target.value),
-                      roomName: roomIndex[Number(e.target.value)].name,
                     }));
                   }}
                 >
@@ -246,11 +231,11 @@ const BookingPage = memo(function BookingPage({
             <div className='card-header'>
               <div>
                 <h2 className='card-title'>Слоты на {draft.date}</h2>
-                <p className='card-meta'>{currentRoom?.name}</p>
+                <p className='card-meta'>{room?.name}</p>
               </div>
               <span className='badge'>
                 <i className='fa-solid fa-bolt' aria-hidden='true'></i>
-                Минимум: {currentRoom?.booking_step_minutes || 60} минут
+                Минимум: {room?.booking_step_minutes || 60} минут
               </span>
             </div>
 
@@ -272,12 +257,21 @@ const BookingPage = memo(function BookingPage({
             !timeslotsLoading &&
             !timeslotsError ? (
               <TimeSlotSlider
+                selectedTime={draft.time ?? '00:00-01:00'}
                 notAllowedTime={timeslots}
                 onTimeRangeChange={handleTimeRangeChange}
                 onDraggingChange={setIsSliderDragging}
-                stepMinutes={currentRoom?.booking_step_minutes}
+                stepMinutes={room?.booking_step_minutes}
               />
-            ) : null}
+            ) : (
+              <TimeSlotSlider
+                selectedTime={draft.time ?? '00:00-01:00'}
+                notAllowedTime={timeslots}
+                onTimeRangeChange={handleTimeRangeChange}
+                onDraggingChange={setIsSliderDragging}
+                stepMinutes={room?.booking_step_minutes}
+              />
+            )}
           </div>
 
           <div className='sticky-actions' aria-label='Итог'>
@@ -285,7 +279,7 @@ const BookingPage = memo(function BookingPage({
               <div className='summary'>
                 <div className='summary-row'>
                   <span>Объект</span>
-                  <strong>{currentRoom?.name}</strong>
+                  <strong>{room?.name}</strong>
                 </div>
                 <div className='summary-row'>
                   <span>Дата</span>
@@ -328,7 +322,7 @@ const BookingPage = memo(function BookingPage({
                     !draft.time ||
                     !draft.hours ||
                     draft.hours <
-                      (currentRoom?.min_booking_duration_minutes / 60 || 60)
+                      (room?.min_booking_duration_minutes ?? 60) / 60
                       ? 'btn-disabled'
                       : ''
                   }`}
@@ -337,22 +331,22 @@ const BookingPage = memo(function BookingPage({
                     !draft.time ||
                     !draft.hours ||
                     draft.hours <
-                      (currentRoom?.min_booking_duration_minutes / 60 || 60)
+                      (room?.min_booking_duration_minutes ?? 60) / 60
                   }
                   onClick={() => navigate('/confirmation')}
                   aria-disabled={
                     !draft.time ||
                     !draft.hours ||
                     draft.hours <
-                      (currentRoom?.min_booking_duration_minutes / 60 || 60)
+                      (room?.min_booking_duration_minutes ?? 60) / 60
                   }
                   title={
                     !draft.time ||
                     !draft.hours ||
                     draft.hours <
-                      (currentRoom?.min_booking_duration_minutes / 60 || 60)
+                      (room?.min_booking_duration_minutes ?? 60) / 60
                       ? `Слот минимум на ${
-                          currentRoom?.booking_step_minutes || 60
+                          room?.booking_step_minutes || 60
                         } минут`
                       : ''
                   }

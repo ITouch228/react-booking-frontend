@@ -97,7 +97,6 @@ export interface Feature {
 
 export interface Draft {
   roomId: number;
-  roomName: string;
   date: string;
   timeFrom: Date | null;
   timeTo: Date | null;
@@ -120,6 +119,22 @@ export interface FormErrors {
   email?: string;
   password?: string;
   passwordConfirm?: string;
+}
+
+export interface RoomFilters {
+  page: number;
+  limit: number;
+
+  locationId?: number;
+  name?: string;
+  capacity?: number;
+  description?: string;
+  type?: RoomType;
+  timeSlotType?: string;
+  minBookingDurationMinutes?: number;
+  bookingStepMinutes?: number;
+  hourPrice?: number;
+  isActive?: boolean;
 }
 
 export const ROOM_TYPES: Exclude<RoomType, null>[] = [

@@ -1,7 +1,7 @@
 import { memo } from 'react';
+import { ToastContainer } from 'react-toastify';
 import Header from './Header';
 import Footer from './Footer';
-import { ToastContainer } from 'react-toastify';
 
 type AppShellProps = {
   children: React.ReactNode;

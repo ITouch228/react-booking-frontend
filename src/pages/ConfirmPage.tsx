@@ -1,30 +1,30 @@
 import { memo, useCallback, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApiClient } from '../services/apiClient';
+import { useRoom } from '../hooks/useRoom';
 import { cx } from '../utils/utils';
 import { toast } from 'react-toastify';
-import type { Booking, Draft, Room } from '../types';
+import type { Booking, Draft } from '../types';
 
 type ConfirmationPageProps = {
-  room: Room;
   draft: Draft;
   bookings: Booking[];
   setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
 };
 
 const ConfirmationPage = memo(function ConfirmationPage({
-  room,
   draft,
   bookings,
   setBookings,
 }: ConfirmationPageProps) {
   const navigate = useNavigate();
-  const { apiFetch } = useApiClient();
 
+  const { apiFetch } = useApiClient();
+  const { room } = useRoom(draft.roomId);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // возможность для бронирования
+  // флаг возможности для бронирования
   const canConfirm = useMemo(
     () => Boolean(room && draft.time && draft.date),
     [room, draft.time, draft.date],
