@@ -1,26 +1,31 @@
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Range } from 'react-range';
-import { convertNumericToTime } from '../utils/utils';
+import { convertNumericToTime, parseTimeRangeToHours } from '../utils/utils';
 import type { Draft } from '../types';
-import '../styles/TimeSlotSlider.css';
 
 type TimeSlotSliderProps = {
+  selectedTime?: string;
   notAllowedTime: Array<[number, number]>;
   stepMinutes?: number;
   onTimeRangeChange: React.Dispatch<React.SetStateAction<Draft>>;
   onDraggingChange?: (isDragging: boolean) => void;
 };
-
 type ThumbProps = React.HTMLAttributes<HTMLDivElement> & { key?: React.Key };
 type MarkProps = React.HTMLAttributes<HTMLDivElement> & { key?: React.Key };
 
 const TimeSlotSlider = memo(function TimeSlotSlider({
+  selectedTime,
   notAllowedTime,
   stepMinutes = 60,
   onTimeRangeChange,
   onDraggingChange,
 }: TimeSlotSliderProps) {
-  const [selectedRange, setSelectedRange] = useState<[number, number]>([0, 1]);
+  // выбранный отрезок (по умолчанию 00:00-01:00)
+  const [selectedRange, setSelectedRange] = useState<[number, number]>(() => {
+    return parseTimeRangeToHours(selectedTime ?? '00:00-01:00');
+  });
+
+  // ref для отслеживания перемещения ползунка
   const draggingRef = useRef(false);
 
   // Однократная установка drag
@@ -63,7 +68,7 @@ const TimeSlotSlider = memo(function TimeSlotSlider({
     [setDragging, notAllowedTime],
   );
 
-  // Конечный коммит осле отпускания слайдера
+  // Конечный коммит при отпускании слайдера
   const commitToDraft = useCallback(
     (values: [number, number]) => {
       setDragging(false);

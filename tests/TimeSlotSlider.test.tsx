@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import TimeSlotSlider from '../src/components/TimeSlotSlider';
 
 vi.mock('react-range', async () => {

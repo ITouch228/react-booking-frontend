@@ -59,12 +59,12 @@ const Header = memo(function Header() {
               >
                 <div
                   onClick={async () => {
+                    navigate('/');
                     await fetch(API_URL + '/auth/logout', {
                       method: 'POST',
                       credentials: 'include',
                     });
                     logout();
-                    navigate('/');
                   }}
                 >
                   <i className={'fa-solid fa-door-open'} aria-hidden='true'></i>{' '}

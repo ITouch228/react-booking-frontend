@@ -7,13 +7,13 @@ import type { FormErrors, LoginPayload } from '../types';
 
 const LoginPage = memo(function LoginPage() {
   const navigate = useNavigate();
-  const { apiFetch } = useApiClient();
-  const { login } = useAuth();
   const [searchParams] = useSearchParams();
   const next = searchParams.get('next');
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { apiFetch } = useApiClient();
+  const { login } = useAuth();
+  const [handleLoginLoading, setHandleLoginLoading] = useState<boolean>(false);
+  const [handleLoginError, setHandleLoginError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<FormErrors>({
     email: '',
     password: '',
@@ -55,8 +55,8 @@ const LoginPage = memo(function LoginPage() {
       if (!validateForm()) return;
 
       try {
-        setIsLoading(true);
-        setError(null);
+        setHandleLoginLoading(true);
+        setHandleLoginError(null);
 
         const email = emailRef.current?.value;
         const password = passRef.current?.value;
@@ -71,14 +71,14 @@ const LoginPage = memo(function LoginPage() {
         );
 
         login(data);
-        setIsLoading(false);
+        setHandleLoginLoading(false);
         toast.success('Вы успешно вошли!');
 
         const path = next ? next : '/profile';
         console.log(next);
         navigate(path);
       } catch (err) {
-        setIsLoading(false);
+        setHandleLoginLoading(false);
 
         if (err instanceof Error) {
           const message = err.message;
@@ -86,11 +86,15 @@ const LoginPage = memo(function LoginPage() {
           console.log(message);
 
           if (message.includes('Wrong email or password')) {
-            setError(
+            setHandleLoginError(
               'Неверный логин или пароль. Пожалуйста, проверьте введенные данные.',
             );
+          } else if (message.includes('Failed to fetch')) {
+            setHandleLoginError(
+              'Произошла ошибка. Пожалуйста, попробуйте повторить позже',
+            );
           } else {
-            setError(message);
+            setHandleLoginError(message);
           }
         }
       }
@@ -108,12 +112,6 @@ const LoginPage = memo(function LoginPage() {
       </div>
 
       <div className='card pad'>
-        {error && (
-          <div className='error-message'>
-            <p>{error}</p>
-          </div>
-        )}
-
         <form className='form' onSubmit={handleLogin}>
           <div className='field'>
             <label htmlFor='login-email'>Логин или email</label>
@@ -148,12 +146,18 @@ const LoginPage = memo(function LoginPage() {
             )}
           </div>
 
+          {handleLoginError && (
+            <div className='error-message'>
+              <p>{handleLoginError}</p>
+            </div>
+          )}
+
           <button
             className='btn btn-primary btn-block'
             type='submit'
-            disabled={isLoading}
+            disabled={handleLoginLoading}
           >
-            {isLoading ? (
+            {handleLoginLoading ? (
               'Загрузка...'
             ) : (
               <>

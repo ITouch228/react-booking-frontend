@@ -6,10 +6,13 @@ import type { FormErrors } from '../types';
 
 const SignUpPage = memo(function SignUpPage() {
   const navigate = useNavigate();
-  const { apiFetch } = useApiClient();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { apiFetch } = useApiClient();
+  const [handleSignUpLoading, setHandleSignUpLoading] =
+    useState<boolean>(false);
+  const [handleSignUperror, setHandleSignUpError] = useState<string | null>(
+    null,
+  );
   const [formErrors, setFormErrors] = useState<{
     name?: string;
     email?: string;
@@ -73,8 +76,8 @@ const SignUpPage = memo(function SignUpPage() {
       if (!validateForm()) return;
 
       try {
-        setIsLoading(true);
-        setError(null);
+        setHandleSignUpLoading(true);
+        setHandleSignUpError(null);
 
         const name = nameRef.current?.value;
         const email = emailRef.current?.value;
@@ -95,22 +98,22 @@ const SignUpPage = memo(function SignUpPage() {
           { auth: false },
         );
 
-        setIsLoading(false);
+        setHandleSignUpLoading(false);
         toast.success('Вы успешно зарегистрировались!');
 
         navigate('/login');
       } catch (err) {
-        setIsLoading(false);
+        setHandleSignUpLoading(false);
 
         if (err instanceof Error) {
           const message = err.message;
 
           if (message.includes('Wrong email or password')) {
-            setError(
+            setHandleSignUpError(
               'Неверный логин или пароль. Пожалуйста, проверьте введенные данные.',
             );
           } else {
-            setError(message);
+            setHandleSignUpError(message);
           }
         }
       }
@@ -128,12 +131,6 @@ const SignUpPage = memo(function SignUpPage() {
       </div>
 
       <div className='card pad'>
-        {error && (
-          <div className='error-message'>
-            <p>{error}</p>
-          </div>
-        )}
-
         <form className='form' onSubmit={handleSignUp}>
           <div className='form-row'>
             <div className='field'>
@@ -199,12 +196,18 @@ const SignUpPage = memo(function SignUpPage() {
             </div>
           </div>
 
+          {handleSignUperror && (
+            <div className='error-message'>
+              <p>{handleSignUperror}</p>
+            </div>
+          )}
+
           <button
             className='btn btn-primary btn-block'
             type='submit'
-            disabled={isLoading}
+            disabled={handleSignUpLoading}
           >
-            {isLoading ? (
+            {handleSignUpLoading ? (
               'Загрузка...'
             ) : (
               <>
