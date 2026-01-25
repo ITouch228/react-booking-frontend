@@ -54,7 +54,8 @@ body {
 
 body {
   margin: 0;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       900px 420px at 0% 0%,
       rgba(37, 99, 235, 0.12),
       transparent 60%
@@ -66,7 +67,13 @@ body {
     ),
     var(--bg);
   color: var(--text);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial,
     sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -103,7 +110,9 @@ a {
 .skip-link:focus {
   transform: translateY(0);
   outline: none;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22), var(--shadow-sm);
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.22),
+    var(--shadow-sm);
 }
 
 /* ==========================================================================
@@ -325,8 +334,12 @@ a {
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  transition: transform 120ms ease, background-color 160ms ease,
-    box-shadow 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition:
+    transform 120ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
 }
 .btn:active {
   transform: translateY(1px);
@@ -545,7 +558,9 @@ a {
   background: rgba(255, 255, 255, 0.9);
   color: var(--text);
   font: inherit;
-  transition: border-color 160ms ease, box-shadow 160ms ease,
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
     background-color 160ms ease;
 }
 .control:focus {
@@ -826,7 +841,9 @@ a {
 .blurred {
   filter: blur(3px);
   opacity: 0.65;
-  transition: filter 120ms ease, opacity 120ms ease;
+  transition:
+    filter 120ms ease,
+    opacity 120ms ease;
   user-select: none;
 }
 
