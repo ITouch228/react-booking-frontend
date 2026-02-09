@@ -61,7 +61,8 @@ export const buildQuery = (filters: RoomFilters): string => {
     ['capacity', filters.capacity],
     ['description', filters.description],
     ['type', filters.type],
-    ['timeSlotType', filters.timeSlotType],
+    // ['timeSlotType', filters.timeSlotType],
+    ['timeSlotType', 'FLEXIBLE'], // Хардкод фильтра только на флексибл таймслоты пока нет реализации с фиксированными
     ['minBookingDurationMinutes', filters.minBookingDurationMinutes],
     ['bookingStepMinutes', filters.bookingStepMinutes],
     ['hourPrice', filters.hourPrice],
