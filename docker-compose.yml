@@ -6,4 +6,4 @@ services:
     restart: unless-stopped
     ports:
       - '127.0.0.1:5172:5172'
-    command: ['npm', 'run', 'build']
+    command: ['npm', 'run', 'dev']
