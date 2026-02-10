@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApiClient } from '../services/apiClient';
-import { buildQuery } from '../utils/utils';
+import { buildRoomsQuery } from '../utils/utils';
 import type { Room, RoomFilters } from '../types';
 
 const useRooms = (filters: RoomFilters) => {
@@ -14,7 +14,7 @@ const useRooms = (filters: RoomFilters) => {
 
   const shouldAppend = filters.page > 0;
 
-  const query = useMemo(() => buildQuery(filters), [filters]);
+  const query = useMemo(() => buildRoomsQuery(filters), [filters]);
 
   useEffect(() => {
     abortRef.current?.abort();
