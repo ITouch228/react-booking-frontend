@@ -5,7 +5,7 @@ import { useApiClient } from '../src/api/apiClient';
 import type { Timeslot } from '../src/types';
 
 // Мокаем модуль apiClient
-vi.mock('../src/services/apiClient', () => ({
+vi.mock('../src/api/apiClient', () => ({
   useApiClient: vi.fn(),
 }));
 

@@ -2,20 +2,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useApiClient } from '../src/api/apiClient';
 import useRooms from '../src/hooks/useRooms';
-import { buildQuery } from '../src/utils/utils';
+import { buildRoomsQuery } from '../src/utils/utils';
 
-vi.mock('../src/services/apiClient', () => ({
+vi.mock('../src/api/apiClient', () => ({
   useApiClient: vi.fn(),
 }));
 
 vi.mock('../src/utils/utils', () => ({
-  buildQuery: vi.fn(),
+  buildRoomsQuery: vi.fn(),
 }));
 
 describe('useRooms hook', () => {
   const apiFetchMock = vi.fn();
   const useApiClientMock = vi.mocked(useApiClient);
-  const buildQueryMock = vi.mocked(buildQuery);
+  const buildRoomsQueryMock = vi.mocked(buildRoomsQuery);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -23,7 +23,7 @@ describe('useRooms hook', () => {
     // По умолчанию возвращаем пустой список комнат
     apiFetchMock.mockResolvedValue([]);
     useApiClientMock.mockReturnValue({ apiFetch: apiFetchMock } as never);
-    buildQueryMock.mockReturnValue('');
+    buildRoomsQueryMock.mockReturnValue(new URLSearchParams());
   });
 
   it('should initialize and then finish with empty rooms', async () => {
@@ -42,8 +42,8 @@ describe('useRooms hook', () => {
     expect(result.current.rooms).toEqual([]);
     expect(result.current.roomsError).toBeNull();
 
-    // Проверяем, что buildQuery вызвался с правильными фильтрами
-    expect(buildQueryMock).toHaveBeenCalledWith(filters);
+    // Проверяем, что buildRoomsQuery вызвался с правильными фильтрами
+    expect(buildRoomsQueryMock).toHaveBeenCalledWith(filters);
 
     // Опционально: проверяем, что apiFetch вызвался корректно
     expect(apiFetchMock).toHaveBeenCalledWith(
@@ -63,12 +63,35 @@ describe('useRooms hook', () => {
       type: 'MEETING_ROOM' as const,
     };
 
-    buildQueryMock.mockReturnValue(
-      'location_id=1&name=Test%20Room&capacity=10&type=MEETING_ROOM&page=0&limit=12',
+    buildRoomsQueryMock.mockReturnValue(
+      new URLSearchParams(
+        'location_id=1&name=Test%20Room&capacity=10&type=MEETING_ROOM&page=0&limit=12',
+      ),
     );
 
     const mockRooms = [
-      { id: 1, name: 'Test Room 1', capacity: 10, type: 'MEETING' as const },
+      {
+        id: 1,
+        name: 'Test Room 1',
+        type: 'MEETING_ROOM',
+        capacity: 10,
+        description: 'A test meeting room',
+        hour_price: '50.00',
+        images: [],
+        features: [],
+        time_slot_type: 'FLEXIBLE',
+        location: {
+          id: 1,
+          name: 'Test Location',
+          address: 'Test Address',
+          description: 'Test Description',
+          features: [],
+        },
+        min_booking_duration_minutes: 60,
+        booking_step_minutes: 60,
+        image_id: 1,
+        location_id: 1,
+      },
     ];
 
     apiFetchMock.mockResolvedValue(mockRooms);
@@ -88,7 +111,7 @@ describe('useRooms hook', () => {
     expect(result.current.roomsError).toBeNull();
 
     // Проверяем, что buildQuery вызвался с правильными фильтрами
-    expect(buildQueryMock).toHaveBeenCalledWith(filters);
+    expect(buildRoomsQueryMock).toHaveBeenCalledWith(filters);
 
     // Проверяем, что apiFetch вызвался с правильным URL
     expect(apiFetchMock).toHaveBeenCalledWith(

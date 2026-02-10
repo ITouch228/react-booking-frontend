@@ -6,7 +6,7 @@ import { AuthContext } from '../src/hooks/authContext';
 import { useApiClient } from '../src/api/apiClient';
 import type { Booking, AuthContextType } from '../src/types';
 
-vi.mock('../src/services/apiClient', () => ({
+vi.mock('../src/api/apiClient', () => ({
   useApiClient: vi.fn(),
 }));
 
@@ -57,13 +57,35 @@ describe('useBookings hook', () => {
           timeslot_id: 1,
           status: 'PAID',
           total_price: '100.00',
+          room: {
+            id: 1,
+            name: 'Test Room',
+            type: 'MEETING_ROOM',
+            capacity: 10,
+            description: 'A test room',
+            hour_price: '50.00',
+            images: [],
+            features: [],
+            time_slot_type: 'FLEXIBLE',
+            location: {
+              id: 1,
+              name: 'Test Location',
+              address: 'Test Address',
+              description: 'Test Description',
+              features: [],
+            },
+            min_booking_duration_minutes: 60,
+            booking_step_minutes: 60,
+            image_id: 1,
+            location_id: 1,
+          },
         },
         timeslot: {
           id: 1,
           room_id: 1,
           start_datetime: '2023-01-01T10:00Z',
           end_datetime: '2023-01-01T11:00Z',
-          base_price: 10,
+          base_price: '10.00',
           status: 'AVAILABLE',
         },
       },
