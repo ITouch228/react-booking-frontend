@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import useTimeslots from '../src/hooks/useTimeslots';
-import { useApiClient } from '../src/services/apiClient';
+import { useApiClient } from '../src/api/apiClient';
 import type { Timeslot } from '../src/types';
 
 // Мокаем модуль apiClient

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useApiClient } from '../src/services/apiClient';
+import { useApiClient } from '../src/api/apiClient';
 import useRooms from '../src/hooks/useRooms';
 import { buildQuery } from '../src/utils/utils';
 
