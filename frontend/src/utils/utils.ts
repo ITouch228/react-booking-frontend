@@ -15,6 +15,7 @@ export const buildRoomsQuery = (filters: RoomFilters): URLSearchParams => {
 
   params.set('page', String(filters.page));
   params.set('limit', String(filters.limit));
+  params.set('time_slot_type', 'FLEXIBLE');
 
   if (filters.locationId != null)
     params.set('location_id', String(filters.locationId));
@@ -28,7 +29,7 @@ export const buildRoomsQuery = (filters: RoomFilters): URLSearchParams => {
 
   if (filters.type) params.set('type', filters.type);
 
-  if (filters.timeSlotType) params.set('time_slot_type', filters.timeSlotType);
+  // if (filters.timeSlotType) params.set('time_slot_type', filters.timeSlotType);
 
   if (filters.minBookingDurationMinutes != null)
     params.set(
