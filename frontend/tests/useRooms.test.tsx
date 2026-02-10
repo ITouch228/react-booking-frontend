@@ -20,7 +20,6 @@ describe('useRooms hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // По умолчанию возвращаем пустой список комнат
     apiFetchMock.mockResolvedValue([]);
     useApiClientMock.mockReturnValue({ apiFetch: apiFetchMock } as never);
     buildRoomsQueryMock.mockReturnValue(new URLSearchParams());
@@ -30,27 +29,29 @@ describe('useRooms hook', () => {
     const filters = { page: 0, limit: 12 };
     const { result } = renderHook(() => useRooms(filters));
 
-    // Сразу после mount хук должен стартовать загрузку
+    // initial
     expect(result.current.rooms).toEqual([]);
     expect(result.current.roomsLoading).toBe(true);
     expect(result.current.roomsError).toBeNull();
 
-    // После завершения запроса загрузка должна закончиться
     await waitFor(() => expect(result.current.roomsLoading).toBe(false));
 
-    // Итоговое состояние
+    // final
     expect(result.current.rooms).toEqual([]);
     expect(result.current.roomsError).toBeNull();
 
-    // Проверяем, что buildRoomsQuery вызвался с правильными фильтрами
     expect(buildRoomsQueryMock).toHaveBeenCalledWith(filters);
 
-    // Опционально: проверяем, что apiFetch вызвался корректно
-    expect(apiFetchMock).toHaveBeenCalledWith(
-      '/rooms?',
+    // apiFetch called
+    expect(apiFetchMock).toHaveBeenCalledTimes(1);
+
+    const [url, opts, meta] = apiFetchMock.mock.calls[0];
+
+    expect(url).toBe('/rooms?'); // пустые параметры дают просто "/rooms?"
+    expect(opts).toEqual(
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
-      { auth: false },
     );
+    expect(meta).toEqual({ auth: false });
   });
 
   it('should fetch rooms with filters applied', async () => {
@@ -63,10 +64,16 @@ describe('useRooms hook', () => {
       type: 'MEETING_ROOM' as const,
     };
 
+    // ВАЖНО: URLSearchParams сам решит, как кодировать пробел (обычно '+')
     buildRoomsQueryMock.mockReturnValue(
-      new URLSearchParams(
-        'location_id=1&name=Test%20Room&capacity=10&type=MEETING_ROOM&page=0&limit=12',
-      ),
+      new URLSearchParams({
+        location_id: '1',
+        name: 'Test Room',
+        capacity: '10',
+        type: 'MEETING_ROOM',
+        page: '0',
+        limit: '12',
+      }),
     );
 
     const mockRooms = [
@@ -98,26 +105,41 @@ describe('useRooms hook', () => {
 
     const { result } = renderHook(() => useRooms(filters));
 
-    // Проверяем начальное состояние
+    // initial
     expect(result.current.rooms).toEqual([]);
     expect(result.current.roomsLoading).toBe(true);
     expect(result.current.roomsError).toBeNull();
 
-    // Ждем завершения загрузки
     await waitFor(() => expect(result.current.roomsLoading).toBe(false));
 
-    // Проверяем результат
+    // final
     expect(result.current.rooms).toEqual(mockRooms);
     expect(result.current.roomsError).toBeNull();
 
-    // Проверяем, что buildQuery вызвался с правильными фильтрами
     expect(buildRoomsQueryMock).toHaveBeenCalledWith(filters);
 
-    // Проверяем, что apiFetch вызвался с правильным URL
-    expect(apiFetchMock).toHaveBeenCalledWith(
-      '/rooms?location_id=1&name=Test%20Room&capacity=10&type=MEETING_ROOM&page=0&limit=12',
+    // apiFetch called
+    expect(apiFetchMock).toHaveBeenCalledTimes(1);
+
+    const [url, opts, meta] = apiFetchMock.mock.calls[0];
+
+    // URL должен начинаться с /rooms?
+    expect(url).toMatch(/^\/rooms\?/);
+
+    const qs = url.split('?')[1] ?? '';
+    const params = new URLSearchParams(qs);
+
+    // проверяем параметры как значения (так не важны '+/%20' и порядок параметров)
+    expect(params.get('location_id')).toBe('1');
+    expect(params.get('name')).toBe('Test Room');
+    expect(params.get('capacity')).toBe('10');
+    expect(params.get('type')).toBe('MEETING_ROOM');
+    expect(params.get('page')).toBe('0');
+    expect(params.get('limit')).toBe('12');
+
+    expect(opts).toEqual(
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
-      { auth: false },
     );
+    expect(meta).toEqual({ auth: false });
   });
 });
