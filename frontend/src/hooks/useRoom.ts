@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useApiClient } from '../services/apiClient';
+import { useApiClient } from '../api/apiClient';
 import type { Room } from '../types';
 
 export function useRoom(roomId: number | null) {

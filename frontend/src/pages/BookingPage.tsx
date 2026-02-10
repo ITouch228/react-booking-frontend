@@ -1,6 +1,6 @@
 import { memo, useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApiClient } from '../services/apiClient';
+import { useApiClient } from '../api/apiClient';
 import { useRoom } from '../hooks/useRoom';
 import TimeSlotSlider from '../components/TimeSlotSlider';
 import Spinner from '../components/Spinner';

@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import useAuth from '../hooks/useAuth';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+// const API_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = '/api'; // Для прода
 
 export function useApiClient() {
   const { setUser, accessToken, setAccessToken, logout } = useAuth();

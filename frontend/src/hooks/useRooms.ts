@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useApiClient } from '../services/apiClient';
+import { useApiClient } from '../api/apiClient';
 import { buildRoomsQuery } from '../utils/utils';
 import type { Room, RoomFilters } from '../types';
 

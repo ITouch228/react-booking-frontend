@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useApiClient } from '../services/apiClient';
+import { useApiClient } from '../api/apiClient';
 import type { Booking } from '../types';
 
 const useBookings = () => {

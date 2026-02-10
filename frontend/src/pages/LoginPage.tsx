@@ -1,6 +1,6 @@
 import { memo, useCallback, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useApiClient } from '../services/apiClient';
+import { useApiClient } from '../api/apiClient';
 import useAuth from '../hooks/useAuth';
 import { toast } from 'react-toastify';
 import type { FormErrors, LoginPayload } from '../types';
