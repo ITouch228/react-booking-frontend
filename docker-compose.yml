@@ -4,6 +4,11 @@ services:
       context: ./frontend
     container_name: booking_frontend
     restart: unless-stopped
-    ports:
-      - '127.0.0.1:5172:5172'
-    command: ['npm', 'run', 'dev']
+    expose:
+      - '80'
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
