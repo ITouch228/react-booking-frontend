@@ -242,7 +242,7 @@ const HomePage = memo(function HomePage({
         ) : roomsError && rooms.length === 0 ? (
           <div className='card pad' aria-label='Ошибка загрузки'>
             <h3 className='card-title'>Не удалось загрузить объекты</h3>
-            <p className='card-meta'>{roomsError}</p>
+            {/* <p className='card-meta'>{roomsError}</p> */}
           </div>
         ) : rooms.length === 0 ? (
           <div className='card pad' aria-label='Ничего не найдено'>

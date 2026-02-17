@@ -177,7 +177,7 @@ const BookingPage = memo(function BookingPage({
             ) : roomsError ? (
               <div className='card pad' aria-label='Ошибка загрузки'>
                 <h3 className='card-title'>Не удалось загрузить объекты</h3>
-                <p className='card-meta'>{roomsError}</p>
+                {/* <p className='card-meta'>{roomsError}</p> */}
               </div>
             ) : (
               <div className='field'>
@@ -249,7 +249,7 @@ const BookingPage = memo(function BookingPage({
             ) : timeslotsError && timeslots.length === 0 ? (
               <div className='card pad' aria-label='Ошибка загрузки'>
                 <h3 className='card-title'>Не удалось загрузить слоты</h3>
-                <p className='card-meta'>{timeslotsError}</p>
+                {/* <p className='card-meta'>{timeslotsError}</p> */}
               </div>
             ) : null}
             {!roomsLoading &&
@@ -263,15 +263,7 @@ const BookingPage = memo(function BookingPage({
                 onDraggingChange={setIsSliderDragging}
                 stepMinutes={room?.booking_step_minutes}
               />
-            ) : (
-              <TimeSlotSlider
-                selectedTime={draft.time ?? '00:00-01:00'}
-                notAllowedTime={timeslots}
-                onTimeRangeChange={handleTimeRangeChange}
-                onDraggingChange={setIsSliderDragging}
-                stepMinutes={room?.booking_step_minutes}
-              />
-            )}
+            ) : null}
           </div>
 
           <div className='sticky-actions' aria-label='Итог'>
