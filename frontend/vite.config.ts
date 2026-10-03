@@ -7,6 +7,5 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5172,
-    allowedHosts: ['booking.itouch.pw', 'www.booking.itouch.pw'],
   },
 });
